@@ -4,6 +4,7 @@
 <meta name="description" content="37 навчальних проєктів з ESP32: анімації, код з поясненнями, самоперевірка і завдання">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;600;700&family=Unbounded:wght@700&family=JetBrains+Mono:wght@400;600&display=swap">
+<script>(()=>{let t=null;try{t=localStorage.getItem("theme")}catch(e){}if(t!=="light"&&t!=="dark")t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.dataset.theme=t})();</script>
 <style>/* Шар сторінки: шапка → липка навігація розділів і проєктів → одна колонка проєкту 1100 px; палітра і шрифти як у vytratomiry */
 :root{
   --ink:#1F1F1F;--mut:#787774;--line:#E9E9E7;--bg:#FFFFFF;--soft:#F7F6F3;--card:#FFFFFF;
@@ -27,6 +28,16 @@ a{color:var(--acc)}
 code{font-family:var(--f-mono);font-size:.86em;background:var(--soft);padding:.05em .35em;border-radius:5px}
 .top .wrap{padding-block:28px 10px}
 .top small{color:var(--mut);font-size:14px}
+.top .wrap{position:relative}.top .wrap>small{display:block;padding-right:52px}
+/* Перемикач теми — як на d-almazov.github.io */
+.theme-toggle{position:absolute;top:18px;right:max(16px,env(safe-area-inset-right,0px));display:grid;width:2.35rem;height:2.35rem;place-items:center;overflow:hidden;padding:0;border:1px solid var(--line);border-radius:50%;background:var(--card);color:var(--ink);cursor:pointer;transition:border-color .2s ease,background-color .2s ease}
+.theme-toggle:hover{background:var(--soft);border-color:var(--mut)}
+.theme-toggle:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.theme-toggle svg{position:absolute;width:1.1rem;height:1.1rem;transition:transform .5s cubic-bezier(.22,1,.36,1),opacity .3s ease}
+.theme-toggle .icon-moon{transform:translateY(150%) rotate(-60deg);opacity:0}
+:root[data-theme="dark"] .theme-toggle .icon-sun{transform:translateY(-150%) rotate(60deg);opacity:0}
+:root[data-theme="dark"] .theme-toggle .icon-moon{transform:none;opacity:1}
+@media (prefers-reduced-motion:reduce){.theme-toggle svg{transition:none}}
 h1{font-family:var(--f-disp);font-size:clamp(24px,4.2vw,38px);line-height:1.15;margin:6px 0 10px;text-wrap:balance}
 .top p{margin:0 0 6px;color:var(--mut);max-width:760px}
 .top .links{font-weight:600}
@@ -129,6 +140,7 @@ footer{padding-block:16px 30px;color:var(--mut);font-size:13px;line-height:1.5;b
 @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
 </style></head><body>
 <header class="top"><div class="wrap">
+<button class="theme-toggle" type="button" data-theme-toggle aria-label="Перемкнути тему"><svg class="icon icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg><svg class="icon icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg></button>
 <small>Вільногірський фаховий коледж УДУНТ · Мікропроцесорна техніка</small>
 <h1>Програмування ESP32: 37 навчальних проєктів</h1>
 <p>Інтерактивний супровід до навчально-методичного посібника за набором Keyestudio ESP32 Learning Kit (KS5011). У кожному проєкті: анімація принципу роботи, код з поясненням кожного рядка, прогноз до запуску, самоперевірка і завдання з підказками.</p>
@@ -1585,6 +1597,27 @@ window.ANIM = (function () {
   }
   window.addEventListener('hashchange', () => show(location.hash));
   show(location.hash);
+})();
+</script>
+<script>// Перемикач світлої/темної теми
+(() => {
+  const KEY = "theme", media = matchMedia("(prefers-color-scheme: dark)");
+  const sys = () => (media.matches ? "dark" : "light");
+  const stored = () => { try { const v = localStorage.getItem(KEY); return v === "light" || v === "dark" ? v : null; } catch (e) { return null; } };
+  const btn = document.querySelector("[data-theme-toggle]");
+  const apply = t => {
+    document.documentElement.dataset.theme = t;
+    if (!btn) return;
+    btn.setAttribute("aria-pressed", String(t === "dark"));
+    btn.setAttribute("aria-label", t === "dark" ? "Увімкнути світлу тему" : "Увімкнути темну тему");
+  };
+  apply(stored() || sys());
+  btn?.addEventListener("click", () => {
+    const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+    try { localStorage.setItem(KEY, next); } catch (e) { }
+    apply(next);
+  });
+  media.addEventListener("change", () => { if (!stored()) apply(sys()); });
 })();
 </script>
 </body></html>
